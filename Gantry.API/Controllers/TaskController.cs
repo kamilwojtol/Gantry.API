@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Gantry.API.Store;
+using Microsoft.AspNetCore.Mvc;
+using static Gantry.API.Utils.TaskUtils;
 
 namespace Gantry.API.Controllers
 {
@@ -6,16 +8,81 @@ namespace Gantry.API.Controllers
     [ApiController]
     public class TaskController : ControllerBase
     {
-        [HttpGet("getTasks")]
-        public ActionResult GetTasks(int kanbanId)
+        readonly GantryStore _gantryStore;
+
+        public TaskController(GantryStore gantryStore)
         {
-            return Ok("Everything is all right!");
+            _gantryStore = gantryStore;
+        }
+
+        [HttpGet("getTasks")]
+        public ActionResult GetAllTasks(int kanbanId)
+        {
+            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
+            {
+                return kanban.Id == kanbanId;
+            });
+
+            if (foundKanban == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(foundKanban.Tasks);
         }
 
         [HttpGet("getTask/{taskId}")]
         public ActionResult GetTaskById(int kanbanId, int taskId)
         {
-            return Ok("Everything is all right!");
+            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
+            {
+                return kanban.Id == kanbanId;
+            });
+
+            if (foundKanban == null)
+            {
+                return NotFound();
+            }
+
+            var foundTask = foundKanban.Tasks.FirstOrDefault((task) =>
+            {
+                return task.Id == taskId;
+            });
+
+            if (foundTask == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(foundTask);
+        }
+
+        [HttpPatch("changeTaskStatus/{taskId}")]
+        public ActionResult ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode)
+        {
+            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
+            {
+                return kanban.Id == kanbanId;
+            });
+
+            if (foundKanban == null)
+            {
+                return NotFound();
+            }
+
+            var foundTask = foundKanban.Tasks.FirstOrDefault((task) =>
+            {
+                return task.Id == taskId;
+            });
+
+            if (foundTask == null)
+            {
+                return NotFound();
+            }
+
+            foundTask.Status = statusCode;
+
+            return Ok(foundTask);
         }
 
     }
