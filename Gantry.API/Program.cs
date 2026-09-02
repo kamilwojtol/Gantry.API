@@ -1,3 +1,5 @@
+using Gantry.API.Interfaces;
+using Gantry.API.Services;
 using Gantry.API.Store;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddSingleton<GantryStore>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
