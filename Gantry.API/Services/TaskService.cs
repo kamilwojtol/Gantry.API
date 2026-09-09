@@ -1,5 +1,5 @@
-﻿using Gantry.API.Interfaces;
-using Gantry.API.Store;
+﻿using Gantry.API.Data;
+using Gantry.API.Interfaces;
 using Gantry.API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,46 +7,37 @@ namespace Gantry.API.Services
 {
     public class TaskService : ITaskService
     {
-        readonly GantryStore _gantryStore;
+        readonly AppDbContext _dbContext;
 
-        public TaskService(GantryStore gantryStore)
+        public TaskService(AppDbContext dbContext)
         {
-            _gantryStore = gantryStore;
+            _dbContext = dbContext;
         }
 
-        public ITask? ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
+        public Models.Task? ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
             if (foundKanban == null)
             {
                 return null;
             }
 
-            var foundTask = foundKanban.Tasks.FirstOrDefault((task) =>
-            {
-                return task.Id == taskId;
-            });
+            var foundTask = _dbContext.Tasks.Find(taskId);
 
             if (foundTask == null)
             {
                 return null;
             }
 
-            foundTask.Status = statusCode;
+            foundTask.StatusCode = statusCode;
 
             return foundTask;
         }
 
-        public List<ITask>? GetAllTasks(int kanbanId)
+        public List<Models.Task>? GetAllTasks(int kanbanId)
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
             if (foundKanban == null)
             {
@@ -56,22 +47,16 @@ namespace Gantry.API.Services
             return foundKanban.Tasks;
         }
 
-        public ITask? GetTaskById(int kanbanId, int taskId)
+        public Models.Task? GetTaskById(int kanbanId, int taskId)
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
             if (foundKanban == null)
             {
                 return null;
             }
 
-            var foundTask = foundKanban.Tasks.FirstOrDefault((task) =>
-            {
-                return task.Id == taskId;
-            });
+            var foundTask = _dbContext.Tasks.Find(taskId);
 
             if (foundTask == null)
             {

@@ -11,5 +11,7 @@ namespace Gantry.API.Data
         }
 
         public DbSet<Kanban> KanbanBoards { get; set; }
+        public DbSet<Models.Task> Tasks { get; set; }
+
     }
 }

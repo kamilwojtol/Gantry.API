@@ -1,5 +1,5 @@
-﻿using Gantry.API.Dtos;
-using Gantry.API.Store;
+﻿using Gantry.API.Data;
+using Gantry.API.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gantry.API.Controllers
@@ -8,20 +8,17 @@ namespace Gantry.API.Controllers
     [ApiController]
     public class KanbanController : ControllerBase
     {
-        readonly GantryStore _gantryStore;
+        readonly AppDbContext _dbContext;
 
-        public KanbanController(GantryStore gantryStore)
+        public KanbanController(AppDbContext dbContext)
         {
-            _gantryStore = gantryStore;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
         public ActionResult GetKanbanById(int kanbanId)
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
             if (foundKanban == null)
             {
@@ -34,17 +31,14 @@ namespace Gantry.API.Controllers
         [HttpDelete]
         public ActionResult RemoveKanbanById(int kanbanId)
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
             if (foundKanban == null)
             {
                 return NotFound();
             }
 
-            _gantryStore.kanbanStore.Remove(foundKanban);
+            _dbContext.KanbanBoards.Remove(foundKanban);
 
             return Ok();
         }
@@ -52,10 +46,8 @@ namespace Gantry.API.Controllers
         [HttpPut]
         public ActionResult EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto )
         {
-            var foundKanban = _gantryStore.kanbanStore.FirstOrDefault((kanban) =>
-            {
-                return kanban.Id == kanbanId;
-            });
+            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
+        
 
             if (foundKanban == null)
             {
@@ -63,7 +55,6 @@ namespace Gantry.API.Controllers
             }
 
             foundKanban.Title = editKanbanDto.Title;
-            foundKanban.Tasks = editKanbanDto.Tasks;
 
             return Ok();
         }
