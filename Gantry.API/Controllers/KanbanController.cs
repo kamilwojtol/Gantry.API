@@ -2,10 +2,11 @@
 using Gantry.API.Dtos;
 using Gantry.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gantry.API.Controllers
 {
-    [Route("/api/kanban/{kanbanId}")]
+    [Route("/api/kanban/")]
     [ApiController]
     public class KanbanController : ControllerBase
     {
@@ -17,10 +18,11 @@ namespace Gantry.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetKanbanById(int kanbanId)
+        [Route("{kanbanId}")]
+        async public Task<ActionResult> GetKanbanById(int kanbanId)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
+            var foundKanban = await _dbContext.KanbanBoards.Include(k => k.Tasks).FirstOrDefaultAsync(k => k.Id == kanbanId);
             if (foundKanban == null)
             {
                 return NotFound();
@@ -30,6 +32,7 @@ namespace Gantry.API.Controllers
         }
 
         [HttpDelete]
+        [Route("{kanbanId}")]
         public ActionResult RemoveKanbanById(int kanbanId)
         {
             var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
@@ -45,21 +48,27 @@ namespace Gantry.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateKanban(EditKanbanDto kanbanBoard)
+        async public Task<ActionResult> CreateKanban(EditKanbanDto kanbanBoard)
         {
             var newKanban = new Kanban()
             {
-                Id = _dbContext.KanbanBoards.Count() + 1,
                 Title = kanbanBoard.Title,
-                Tasks = new List<Models.Task>()
+                Tasks = (kanbanBoard.Tasks != null && kanbanBoard.Tasks.Count > 0) ? kanbanBoard.Tasks : null,
             }; 
 
             _dbContext.KanbanBoards.Add(newKanban);
 
-            return Ok();
+            await _dbContext.SaveChangesAsync();
+
+            return CreatedAtAction(
+                nameof(GetKanbanById),
+                new { kanbanId = newKanban.Id },
+                newKanban
+            );
         }
 
         [HttpPut]
+        [Route("{kanbanId}")]
         public ActionResult EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto )
         {
             var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);

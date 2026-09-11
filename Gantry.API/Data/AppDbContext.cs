@@ -13,5 +13,12 @@ namespace Gantry.API.Data
         public DbSet<Kanban> KanbanBoards { get; set; }
         public DbSet<Models.Task> Tasks { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Gantry.API.Models.Task>().ToTable("Tasks");
+        }
+
     }
 }
