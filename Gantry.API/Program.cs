@@ -24,14 +24,13 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapControllers();
 app.UseRouting();
 app.UseCors("Frontend");
+
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();
