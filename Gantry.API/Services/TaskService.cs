@@ -14,7 +14,7 @@ namespace Gantry.API.Services
             _dbContext = dbContext;
         }
 
-        public Models.Task? ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
+        async public Task<Models.Task?> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
         {
             var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
@@ -23,16 +23,16 @@ namespace Gantry.API.Services
                 return null;
             }
 
-            var foundTask = _dbContext.Tasks.Find(taskId);
+            var taskFromDatabase = await _dbContext.Tasks.FindAsync(taskId);
 
-            if (foundTask == null)
+            if (taskFromDatabase != null)
             {
-                return null;
+                taskFromDatabase.StatusCode = statusCode;
             }
 
-            foundTask.StatusCode = statusCode;
+            await _dbContext.SaveChangesAsync();
 
-            return foundTask;
+            return taskFromDatabase;
         }
 
         public List<Models.Task>? GetAllTasks(int kanbanId)

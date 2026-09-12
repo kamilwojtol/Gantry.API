@@ -7,6 +7,6 @@ namespace Gantry.API.Interfaces
     {
         public List<Models.Task>? GetAllTasks(int kanbanId);
         public Models.Task? GetTaskById(int kanbanId, int taskId);
-        public Models.Task? ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode);
+        public Task<Models.Task?> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode);
     }
 }

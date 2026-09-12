@@ -43,9 +43,9 @@ namespace Gantry.API.Controllers
         }
 
         [HttpPatch("changeTaskStatus/{taskId}")]
-        public ActionResult<ITask> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode)
+        async public Task<ActionResult<ITask>> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode)
         {
-            var taskWithChangedStatus = _taskService.ChangeTaskStatus(kanbanId, taskId, statusCode);
+            var taskWithChangedStatus = await _taskService.ChangeTaskStatus(kanbanId, taskId, statusCode);
 
             if (taskWithChangedStatus == null)
             {
