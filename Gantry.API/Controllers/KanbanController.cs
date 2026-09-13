@@ -53,6 +53,7 @@ namespace Gantry.API.Controllers
             var newKanban = new Kanban()
             {
                 Title = kanbanBoard.Title,
+                Description = kanbanBoard.Description,
                 Tasks = (kanbanBoard.Tasks != null && kanbanBoard.Tasks.Count > 0) ? kanbanBoard.Tasks : null,
             }; 
 
@@ -80,6 +81,7 @@ namespace Gantry.API.Controllers
             }
 
             foundKanban.Title = editKanbanDto.Title;
+            foundKanban.Description = editKanbanDto.Description;
 
             return Ok();
         }
