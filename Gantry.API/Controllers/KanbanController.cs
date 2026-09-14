@@ -18,6 +18,14 @@ namespace Gantry.API.Controllers
         }
 
         [HttpGet]
+        async public Task<ActionResult> GetAllKanbanBoards()
+        {
+            var kanbanBoards = await _dbContext.KanbanBoards.ToListAsync();
+
+            return Ok(kanbanBoards);
+        }
+
+        [HttpGet]
         [Route("{kanbanId}")]
         async public Task<ActionResult> GetKanbanById(int kanbanId)
         {
