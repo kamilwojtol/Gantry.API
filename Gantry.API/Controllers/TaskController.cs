@@ -1,5 +1,7 @@
-﻿using Gantry.API.Interfaces;
+﻿using Gantry.API.Dtos;
+using Gantry.API.Interfaces;
 using Gantry.API.Store;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Gantry.API.Utils.TaskUtils;
 
@@ -40,6 +42,18 @@ namespace Gantry.API.Controllers
             }
 
             return Ok(singleIdTask);
+        }
+
+        [HttpPost("createTask/")]
+        async public Task<ActionResult<Models.Task>> CreateTask(int kanbanId, PostTaskDto newTask)
+        {
+            if (newTask == null)
+            {
+                return BadRequest();
+            }
+
+            var task = await _taskService.CreateTask(kanbanId, newTask);
+            return Ok(task);
         }
 
         [HttpPatch("changeTaskStatus/{taskId}")]
