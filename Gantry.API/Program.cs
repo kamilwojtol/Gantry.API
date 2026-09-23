@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("http://localhost:3000", "https://witty-sand-023e3cb1e.6.azurestaticapps.net")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -26,10 +26,11 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.MapControllers();
 app.UseRouting();
 app.UseCors("Frontend");
+app.MapControllers();
+
+
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
