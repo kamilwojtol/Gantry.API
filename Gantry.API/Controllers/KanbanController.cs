@@ -1,5 +1,6 @@
 ﻿using Gantry.API.Data;
 using Gantry.API.Dtos;
+using Gantry.API.Interfaces;
 using Gantry.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,17 +11,17 @@ namespace Gantry.API.Controllers
     [ApiController]
     public class KanbanController : ControllerBase
     {
-        readonly AppDbContext _dbContext;
+        readonly IKanbanService _kanbanService;
 
-        public KanbanController(AppDbContext dbContext)
+        public KanbanController(IKanbanService kanbanService)
         {
-            _dbContext = dbContext;
+            _kanbanService = kanbanService;
         }
 
         [HttpGet]
         async public Task<ActionResult> GetAllKanbanBoards()
         {
-            var kanbanBoards = await _dbContext.KanbanBoards.ToListAsync();
+            var kanbanBoards = _kanbanService.GetAllKanbanBoards();
 
             return Ok(kanbanBoards);
         }
@@ -29,12 +30,7 @@ namespace Gantry.API.Controllers
         [Route("{kanbanId}")]
         async public Task<ActionResult> GetKanbanById(int kanbanId)
         {
-
-            var foundKanban = await _dbContext.KanbanBoards.Include(k => k.Tasks).FirstOrDefaultAsync(k => k.Id == kanbanId);
-            if (foundKanban == null)
-            {
-                return NotFound();
-            }
+            var foundKanban = _kanbanService.GetKanbanById(kanbanId);
 
             return Ok(foundKanban);
         }
@@ -43,14 +39,7 @@ namespace Gantry.API.Controllers
         [Route("{kanbanId}")]
         public ActionResult RemoveKanbanById(int kanbanId)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
-
-            if (foundKanban == null)
-            {
-                return NotFound();
-            }
-
-            _dbContext.KanbanBoards.Remove(foundKanban);
+            _kanbanService.RemoveKanbanById(kanbanId);
 
             return Ok();
         }
@@ -58,16 +47,7 @@ namespace Gantry.API.Controllers
         [HttpPost]
         async public Task<ActionResult> CreateKanban(EditKanbanDto kanbanBoard)
         {
-            var newKanban = new Kanban()
-            {
-                Title = kanbanBoard.Title,
-                Description = kanbanBoard.Description,
-                Tasks = (kanbanBoard.Tasks != null && kanbanBoard.Tasks.Count > 0) ? kanbanBoard.Tasks : null,
-            }; 
-
-            _dbContext.KanbanBoards.Add(newKanban);
-
-            await _dbContext.SaveChangesAsync();
+           var newKanban = _kanbanService.CreateKanban(kanbanBoard);
 
             return CreatedAtAction(
                 nameof(GetKanbanById),
@@ -78,18 +58,9 @@ namespace Gantry.API.Controllers
 
         [HttpPut]
         [Route("{kanbanId}")]
-        public ActionResult EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto )
+        public ActionResult EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
-        
-
-            if (foundKanban == null)
-            {
-                return NotFound();
-            }
-
-            foundKanban.Title = editKanbanDto.Title;
-            foundKanban.Description = editKanbanDto.Description;
+            _kanbanService.EditKanbanById(kanbanId, editKanbanDto);
 
             return Ok();
         }
