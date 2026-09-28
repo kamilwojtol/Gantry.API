@@ -5,6 +5,7 @@ using Gantry.API.Store;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddLogging(builder => builder.AddConsole());
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
@@ -24,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<GantryStore>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IKanbanService, KanbanService>();
 
 var app = builder.Build();
 

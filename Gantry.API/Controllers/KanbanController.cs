@@ -21,7 +21,7 @@ namespace Gantry.API.Controllers
         [HttpGet]
         async public Task<ActionResult> GetAllKanbanBoards()
         {
-            var kanbanBoards = _kanbanService.GetAllKanbanBoards();
+            var kanbanBoards = await _kanbanService.GetAllKanbanBoards();
 
             return Ok(kanbanBoards);
         }
@@ -30,16 +30,16 @@ namespace Gantry.API.Controllers
         [Route("{kanbanId}")]
         async public Task<ActionResult> GetKanbanById(int kanbanId)
         {
-            var foundKanban = _kanbanService.GetKanbanById(kanbanId);
+            var foundKanban = await _kanbanService.GetKanbanById(kanbanId);
 
             return Ok(foundKanban);
         }
 
         [HttpDelete]
         [Route("{kanbanId}")]
-        public ActionResult RemoveKanbanById(int kanbanId)
+        async public Task<ActionResult> RemoveKanbanById(int kanbanId)
         {
-            _kanbanService.RemoveKanbanById(kanbanId);
+            await _kanbanService.RemoveKanbanById(kanbanId);
 
             return Ok();
         }
@@ -47,7 +47,7 @@ namespace Gantry.API.Controllers
         [HttpPost]
         async public Task<ActionResult> CreateKanban(EditKanbanDto kanbanBoard)
         {
-           var newKanban = _kanbanService.CreateKanban(kanbanBoard);
+           var newKanban = await _kanbanService.CreateKanban(kanbanBoard);
 
             return CreatedAtAction(
                 nameof(GetKanbanById),
@@ -58,9 +58,9 @@ namespace Gantry.API.Controllers
 
         [HttpPut]
         [Route("{kanbanId}")]
-        public ActionResult EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
+        async public Task<ActionResult> EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
         {
-            _kanbanService.EditKanbanById(kanbanId, editKanbanDto);
+            await _kanbanService.EditKanbanById(kanbanId, editKanbanDto);
 
             return Ok();
         }
