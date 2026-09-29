@@ -1,7 +1,6 @@
 ﻿using Gantry.API.Data;
 using Gantry.API.Dtos;
 using Gantry.API.Interfaces;
-using Gantry.API.Models;
 using Gantry.API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,25 +15,28 @@ namespace Gantry.API.Services
             _dbContext = dbContext;
         }
 
-        async public Task<Models.Task?> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
+        async public Task<Models.Task> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskUtils.TaskStatusCode statusCode)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
+            var foundKanban = await _dbContext.KanbanBoards.FindAsync(kanbanId);
 
             if (foundKanban == null)
             {
                 return null;
             }
 
-            var taskFromDatabase = await _dbContext.Tasks.FindAsync(taskId);
+            var taskFromFoundKanban = foundKanban.Tasks.FirstOrDefault((task) => task.Id == taskId);
 
-            if (taskFromDatabase != null)
+            if (taskFromFoundKanban == null)
             {
-                taskFromDatabase.StatusCode = statusCode;
+                return null;
+            } else
+            {
+                taskFromFoundKanban.StatusCode = statusCode;
             }
 
             await _dbContext.SaveChangesAsync();
 
-            return taskFromDatabase;
+            return taskFromFoundKanban;
         }
 
         async public Task<Models.Task> CreateTask(int kanbanId, PostTaskDto taskDto)
@@ -63,9 +65,9 @@ namespace Gantry.API.Services
             return newTask;
         }
 
-        public List<Models.Task>? GetAllTasks(int kanbanId)
+        async public Task<List<Models.Task>> GetAllTasks(int kanbanId)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
+            var foundKanban = await _dbContext.KanbanBoards.FindAsync(kanbanId);
 
             if (foundKanban == null)
             {
@@ -75,9 +77,9 @@ namespace Gantry.API.Services
             return foundKanban.Tasks;
         }
 
-        public Models.Task? GetTaskById(int kanbanId, int taskId)
+        async public Task<Models.Task> GetTaskById(int kanbanId, int taskId)
         {
-            var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
+            var foundKanban = await _dbContext.KanbanBoards.FindAsync(kanbanId);
 
             if (foundKanban == null)
             {

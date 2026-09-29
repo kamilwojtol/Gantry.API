@@ -39,7 +39,12 @@ namespace Gantry.API.Controllers
         [Route("{kanbanId}")]
         async public Task<ActionResult> RemoveKanbanById(int kanbanId)
         {
-            await _kanbanService.RemoveKanbanById(kanbanId);
+            var deletedKanban = await _kanbanService.RemoveKanbanById(kanbanId);
+
+            if (deletedKanban == null)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }
@@ -60,7 +65,12 @@ namespace Gantry.API.Controllers
         [Route("{kanbanId}")]
         async public Task<ActionResult> EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
         {
-            await _kanbanService.EditKanbanById(kanbanId, editKanbanDto);
+            var editedKanban = await _kanbanService.EditKanbanById(kanbanId, editKanbanDto);
+
+            if (editedKanban == null)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }

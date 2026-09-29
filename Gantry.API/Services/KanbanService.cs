@@ -15,7 +15,7 @@ namespace Gantry.API.Services
             _dbContext = dbContext;
         }
 
-        async public Task<Models.Kanban> CreateKanban(EditKanbanDto kanbanBoard)
+        async public Task<Kanban> CreateKanban(EditKanbanDto kanbanBoard)
         {
             var newKanban = new Kanban()
             {
@@ -31,7 +31,7 @@ namespace Gantry.API.Services
             return newKanban;
         }
 
-        async public Task<Models.Kanban> EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
+        async public Task<Kanban> EditKanbanById(int kanbanId, EditKanbanDto editKanbanDto)
         {
             var foundKanban = _dbContext.KanbanBoards.Find(kanbanId);
 
@@ -44,17 +44,19 @@ namespace Gantry.API.Services
             foundKanban.Title = editKanbanDto.Title;
             foundKanban.Description = editKanbanDto.Description;
 
+            await _dbContext.SaveChangesAsync();
+
             return foundKanban;
         }
 
-        async public Task<List<Models.Kanban>> GetAllKanbanBoards()
+        async public Task<List<Kanban>> GetAllKanbanBoards()
         {
             var kanbanBoards = await _dbContext.KanbanBoards.ToListAsync();
 
             return kanbanBoards;
         }
 
-        async public Task<Models.Kanban> GetKanbanById(int kanbanId)
+        async public Task<Kanban> GetKanbanById(int kanbanId)
         {
             var foundKanban = await _dbContext.KanbanBoards.Include(k => k.Tasks).FirstOrDefaultAsync(k => k.Id == kanbanId);
             if (foundKanban == null)
@@ -65,7 +67,7 @@ namespace Gantry.API.Services
             return foundKanban;
         }
 
-        async public Task<Models.Kanban> RemoveKanbanById(int kanbanId)
+        async public Task<Kanban> RemoveKanbanById(int kanbanId)
         {
             var foundKanban = await _dbContext.KanbanBoards.FindAsync(kanbanId);
 
@@ -75,6 +77,8 @@ namespace Gantry.API.Services
             }
 
             _dbContext.KanbanBoards.Remove(foundKanban);
+
+            await _dbContext.SaveChangesAsync();
 
             return foundKanban;
         }

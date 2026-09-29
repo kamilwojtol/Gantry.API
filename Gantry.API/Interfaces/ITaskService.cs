@@ -6,8 +6,8 @@ namespace Gantry.API.Interfaces
 {
     public interface ITaskService
     {
-        public List<Models.Task>? GetAllTasks(int kanbanId);
-        public Models.Task? GetTaskById(int kanbanId, int taskId);
+        public Task<List<Models.Task>>? GetAllTasks(int kanbanId);
+        public Task<Models.Task>? GetTaskById(int kanbanId, int taskId);
         public Task<Models.Task> CreateTask(int kanbanId, PostTaskDto taskDto);
         public Task<Models.Task?> ChangeTaskStatus(int kanbanId, int taskId, [FromQuery] TaskStatusCode statusCode);
     }

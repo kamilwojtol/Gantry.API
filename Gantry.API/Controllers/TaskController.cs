@@ -1,7 +1,5 @@
 ﻿using Gantry.API.Dtos;
 using Gantry.API.Interfaces;
-using Gantry.API.Store;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Gantry.API.Utils.TaskUtils;
 
@@ -19,9 +17,9 @@ namespace Gantry.API.Controllers
         }
 
         [HttpGet("getTasks")]
-        public ActionResult<List<ITask>> GetAllTasks(int kanbanId)
+        async public Task<ActionResult<List<ITask>>> GetAllTasks(int kanbanId)
         {
-            var allTasks = _taskService.GetAllTasks(kanbanId);
+            var allTasks = await _taskService.GetAllTasks(kanbanId);
 
             if (allTasks == null)
             {
@@ -32,9 +30,9 @@ namespace Gantry.API.Controllers
         }
 
         [HttpGet("getTask/{taskId}")]
-        public ActionResult<ITask> GetTaskById(int kanbanId, int taskId)
+        async public Task<ActionResult<ITask>> GetTaskById(int kanbanId, int taskId)
         {
-            var singleIdTask = _taskService.GetTaskById(kanbanId, taskId);
+            var singleIdTask = await _taskService.GetTaskById(kanbanId, taskId);
 
             if (singleIdTask == null)
             {
