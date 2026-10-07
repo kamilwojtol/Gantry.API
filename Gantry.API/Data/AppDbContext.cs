@@ -1,15 +1,12 @@
 ﻿using Gantry.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gantry.API.Data
 {
-    public class AppDbContext: DbContext
+    public sealed class AppDbContext: IdentityDbContext<ApplicationUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-
-        }
-
         public DbSet<Kanban> KanbanBoards { get; set; }
         public DbSet<Models.Task> Tasks { get; set; }
 
@@ -18,7 +15,13 @@ namespace Gantry.API.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Gantry.API.Models.Task>().ToTable("Tasks");
+
         }
 
+    }
+
+    public sealed class ApplicationUser : IdentityUser
+    {
+        public bool EnableNotifications { get; set; }
     }
 }
