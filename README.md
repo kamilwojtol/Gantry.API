@@ -226,7 +226,7 @@ The project is still evolving. Possible future improvements include:
 
 ## 👨‍💻 Author
 
-**Kamil Wojtoł**
+**Kamil Wojtol**
 
 GitHub: [github.com/kamilwojtol](https://github.com/kamilwojtol)
 
